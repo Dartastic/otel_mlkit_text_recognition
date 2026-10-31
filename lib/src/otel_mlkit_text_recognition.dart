@@ -1,15 +1,16 @@
-// Licensed under the Dartastic Pro Software License Agreement.
+// Licensed under the Apache License, Version 2.0
 // Copyright 2025-2026 Mindful Software LLC d/b/a Dartastic.io, All rights reserved.
 
-import 'package:dartastic_opentelemetry/dartastic_opentelemetry.dart';
+import 'package:dartastic_opentelemetry_api/dartastic_opentelemetry_api.dart';
 
 import 'otel_mlkit_text_recognition_suppression.dart';
 
 const _tracerName = 'dartastic_otel_libs_mlkit_text_recognition';
 
-Tracer _tracer() => OTel.tracerProvider().getTracer(_tracerName);
+APITracer _tracer() => OTelAPI.tracerProvider().getTracer(_tracerName);
 
 class MlkitTextRecognitionResult {
+  /// Creates a result.
   const MlkitTextRecognitionResult({
     this.script,
     this.inputImageSource,
@@ -56,8 +57,13 @@ class MlkitTextRecognitionResult {
   final double? confidence;
 }
 
+/// What a traced call returned: the value for the caller plus fields
+/// recorded on the span.
 class MlkitTextRecognitionCallResult<T> {
+  /// Creates a call result.
   const MlkitTextRecognitionCallResult({required this.value, this.result});
+
+  /// The value returned to the caller.
   final T value;
   final MlkitTextRecognitionResult? result;
 }
@@ -81,7 +87,7 @@ Future<T> tracedMlkitTextRecognition<T>({
   final span = _tracer().startSpan(
     'mlkit_text_recognition $operation',
     kind: SpanKind.client,
-    attributes: OTel.attributesFromMap(m),
+    attributes: OTelAPI.attributesFromMap(m),
   );
   try {
     final r = await invoke();
@@ -89,90 +95,90 @@ Future<T> tracedMlkitTextRecognition<T>({
       final res = r.result!;
       final extras = <Attribute<Object>>[];
       if (res.script != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'mlkit_text_recognition.script',
           res.script!,
         ));
       }
       if (res.inputImageSource != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'mlkit_text_recognition.input.source',
           res.inputImageSource!,
         ));
       }
       if (res.inputImageWidth != null) {
-        extras.add(OTel.attributeInt(
+        extras.add(OTelAPI.attributeInt(
           'mlkit_text_recognition.input.width',
           res.inputImageWidth!,
         ));
       }
       if (res.inputImageHeight != null) {
-        extras.add(OTel.attributeInt(
+        extras.add(OTelAPI.attributeInt(
           'mlkit_text_recognition.input.height',
           res.inputImageHeight!,
         ));
       }
       if (res.blockCount != null) {
-        extras.add(OTel.attributeInt(
+        extras.add(OTelAPI.attributeInt(
           'mlkit_text_recognition.block.count',
           res.blockCount!,
         ));
       }
       if (res.lineCount != null) {
-        extras.add(OTel.attributeInt(
+        extras.add(OTelAPI.attributeInt(
           'mlkit_text_recognition.line.count',
           res.lineCount!,
         ));
       }
       if (res.elementCount != null) {
-        extras.add(OTel.attributeInt(
+        extras.add(OTelAPI.attributeInt(
           'mlkit_text_recognition.element.count',
           res.elementCount!,
         ));
       }
       if (res.totalCharCount != null) {
-        extras.add(OTel.attributeInt(
+        extras.add(OTelAPI.attributeInt(
           'mlkit_text_recognition.char.count',
           res.totalCharCount!,
         ));
       }
       if (res.detectedLanguages != null) {
-        extras.add(OTel.attributeStringList(
+        extras.add(OTelAPI.attributeStringList(
           'mlkit_text_recognition.detected_languages',
           res.detectedLanguages!,
         ));
       }
       if (res.processingMs != null) {
-        extras.add(OTel.attributeInt(
+        extras.add(OTelAPI.attributeInt(
           'mlkit_text_recognition.processing_ms',
           res.processingMs!,
         ));
       }
       if (res.modelDownloaded != null) {
-        extras.add(OTel.attributeBool(
+        extras.add(OTelAPI.attributeBool(
           'mlkit_text_recognition.model.downloaded',
           res.modelDownloaded!,
         ));
       }
       if (res.onDeviceOnly != null) {
-        extras.add(OTel.attributeBool(
+        extras.add(OTelAPI.attributeBool(
           'mlkit_text_recognition.on_device_only',
           res.onDeviceOnly!,
         ));
       }
       if (res.confidence != null) {
-        extras.add(OTel.attributeDouble(
+        extras.add(OTelAPI.attributeDouble(
           'mlkit_text_recognition.confidence',
           res.confidence!,
         ));
       }
-      if (extras.isNotEmpty) span.addAttributes(OTel.attributes(extras));
+      if (extras.isNotEmpty) span.addAttributes(OTelAPI.attributes(extras));
     }
     return r.value;
   } catch (e, st) {
-    span.addAttributes(OTel.attributes([
-      OTel.attributeString(
-        ErrorResource.errorType.key,
+    span.addAttributes(OTelAPI.attributes([
+      OTelAPI.attributeString(
+        ErrorAttributes.errorType.key,
         e.runtimeType.toString(),
       ),
     ]));
